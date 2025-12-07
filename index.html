@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>HTML 5 Boilerplate</title>
+        <link rel="stylesheet" href="styles.css">
+        <script async src="script.js"></script>
+        <script async
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCff01i5Dul8EBGNX8dj2fKCK4NU_i7YwA&loading=async&callback=initMap">
+        </script>
+    </head>
+    <body>
+        <main class="main-grid">
+            <header class="main-header">
+                <h1>CSUN Map Quiz</h1>
+                <button id="control-button" data-control="begin">Begin</button>
+            </header>
+            <section id="question-section">
+                <h2>Score: <span id="score">0/0</span></h2>
+            </section>
+            <section id="map-section">
+                <div id="map-wrapper">
+                    <div id="map">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

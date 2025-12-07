@@ -1,0 +1,60 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#map-wrapper {
+    width: 400px;
+    height: 400px;
+
+    border: 1px solid black;
+
+    margin: auto;
+}
+
+#map {
+    height: 100%;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    margin: 0 1rem;
+}
+
+.main-header {
+    grid-column: span 2;
+    text-align: center;
+}
+
+.correct {
+    --grad-1: oklch(0.68 0.1 138.71 / 0.6);
+    --grad-2: oklch(0.8769 0.1 138.71 / 0.6);
+}
+
+.incorrect {
+    --grad-1: oklch(0.3932 0.1135 22.24 / 0.6);
+    --grad-2: oklch(0.5475 0.1135 22.24 / 0.6);
+}
+
+.unanswered {
+    --grad-1: oklch(0.5712 0.0697 242.48 / 0.6);
+    --grad-2: oklch(0.6958 0.0697 242.48 / 0.6);
+}
+
+#question-section > * {
+    margin: 0;
+    margin-bottom: 1rem;
+
+    padding: .2rem;
+
+}
+
+.question {
+    --text: oklch(0.0467 0.0093 6.35);
+    color: var(--text, grey);
+    background: linear-gradient(to right, var(--grad-1, grey), var(--grad-2, lightgrey) 80%);
+}
