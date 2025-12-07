@@ -45,12 +45,15 @@ html, body {
     --grad-2: oklch(0.6958 0.0697 242.48 / 0.6);
 }
 
-#question-section > * {
+#question-section > *, #stats > h2 {
     margin: 0;
-    margin-bottom: 1rem;
 
     padding: .2rem;
 
+}
+
+#question-section > * {
+    margin-bottom: 1rem;
 }
 
 .question {

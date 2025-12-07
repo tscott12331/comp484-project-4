@@ -39,6 +39,10 @@ const questions = [
 
 let currentQuestionIndex = questions.length;
 let questionsCorrect = 0;
+let timePassed = 0.0;
+let timerIntervalId = null;
+const timerPrecision = 100; // ms
+const timerFractionsShown = 1;
 
 const sierraTowerCoords = [
     { lat: 34.23844915667311, lng: -118.53013980471616 },
@@ -97,15 +101,17 @@ const citrusHallCoords = [
 const questionSection = document.querySelector("#question-section");
 const controlButton = document.querySelector("#control-button");
 const scoreEl = document.querySelector("#score");
+const timerEl = document.querySelector("#timer");
 
 const gameBeganEvent = new Event('game-began');
 const questionAnswered = new Event('question-answered');
 
 
-/* INITIALIZATION */
+/* LISTENERS */
 
 controlButton.addEventListener('click', e => {
     document.dispatchEvent(gameBeganEvent);
+    controlButton.innerText = 'Restart';
 });
 
 document.addEventListener('game-began', () => {
@@ -122,10 +128,14 @@ document.addEventListener('game-began', () => {
     resetQuestionObjs();
     resetPolygons();
     resetScore();
+    resetTimer();
 
     // add first question
     currentQuestionIndex = 0;
     addQuestion(questions[currentQuestionIndex]);
+
+    // start timer
+    startTimer();
 });
 
 document.addEventListener('question-answered', () => {
@@ -138,6 +148,7 @@ document.addEventListener('question-answered', () => {
     currentQuestionIndex++;
     if(currentQuestionIndex >= questions.length) {
         // game over
+        stopTimer();
     } else {
         addQuestion(questions[currentQuestionIndex]);
     }
@@ -239,6 +250,7 @@ window.initMap = initMap;
 
 
 /* FUNCTIONS */
+
 function answerQuestion(answer, questionIndex) {
     if(questionIndex >= questions.length) return;
 
@@ -336,4 +348,20 @@ function updateScore(score, questionIndex) {
 
 function resetScore() {
     scoreEl.innerText = '0/0';
+}
+
+function resetTimer() {
+    timePassed = 0.0;
+    clearInterval(timerIntervalId);
+}
+
+function startTimer() {
+    timerIntervalId = setInterval(() => {
+        timePassed += timerPrecision / 1000;
+        timerEl.innerText = timePassed.toFixed(timerFractionsShown);
+    }, timerPrecision);
+}
+
+function stopTimer() {
+    clearInterval(timerIntervalId);
 }

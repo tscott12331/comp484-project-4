@@ -6,9 +6,9 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>HTML 5 Boilerplate</title>
         <link rel="stylesheet" href="styles.css">
-        <script async src="script.js"></script>
-        <script async
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCff01i5Dul8EBGNX8dj2fKCK4NU_i7YwA&loading=async&callback=initMap">
+        <script defer src="script.js"></script>
+        <script defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApoSkG4CHVaDSYgV7Op3vEXdw5KqrFFPo&loading=async&callback=initMap">
         </script>
     </head>
     <body>
@@ -18,7 +18,10 @@
                 <button id="control-button" data-control="begin">Begin</button>
             </header>
             <section id="question-section">
-                <h2>Score: <span id="score">0/0</span></h2>
+                <div id="stats">
+                    <h2>Score: <span id="score">0/0</span></h2>
+                    <h2>Time: <span id="timer">0.0</span></h2>
+                </div>
             </section>
             <section id="map-section">
                 <div id="map-wrapper">
