@@ -317,9 +317,14 @@ function getPolygonOptions(coords, displayType) {
 }
 
 function addQuestion(question) {
-    const questionEl = document.createElement('h2');
+    const questionEl = document.createElement('div');
+    const questionText = document.createElement('h2');
+    questionEl.appendChild(questionText);
+
     questionEl.classList.add('question', question.status);
-    questionEl.innerText = question.text;
+
+    questionText.innerText = question.text;
+
     questionSection.appendChild(questionEl);
 }
 
