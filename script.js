@@ -1,8 +1,9 @@
 /* GLOBALS + CONSTANTS */
 
+// pseudo enum for potential answers to questions
 const enumAnswers = {
     UNKNOWN_LOC: 0,
-    SIERRA_TOWER: 1,
+    SIERRA_TOWER: 1, // ASSIGNED BUILDING
     MATADOR_HALL: 2,
     MAPLE_HALL: 3,
     LIVE_OAK_HALL: 4,
@@ -41,8 +42,14 @@ let currentQuestionIndex = questions.length;
 let questionsCorrect = 0;
 let timePassed = 0.0;
 let timerIntervalId = null;
+
+// what millisecond amount does the timer add per interval
 const timerPrecision = 100; // ms
+// how many decimal points to show?
 const timerFractionsShown = 1;
+
+
+// coordinates to draw surrounding polygon of structures
 
 const sierraTowerCoords = [
     { lat: 34.23844915667311, lng: -118.53013980471616 },
@@ -98,18 +105,22 @@ const citrusHallCoords = [
 ];
 
 
+// element references
 const questionSection = document.querySelector("#question-section");
 const controlButton = document.querySelector("#control-button");
 const scoreEl = document.querySelector("#score");
 const timerEl = document.querySelector("#timer");
 
+// custom events
 const gameBeganEvent = new Event('game-began');
 const questionAnswered = new Event('question-answered');
 
 
 /* LISTENERS */
 
+// control button handles starting and restarting
 controlButton.addEventListener('click', e => {
+    // game began, send event
     document.dispatchEvent(gameBeganEvent);
     controlButton.innerText = 'Restart';
 });
@@ -124,6 +135,7 @@ document.addEventListener('game-began', () => {
         }
     }
 
+    // reset data
     questionsCorrect = 0;
     resetQuestionObjs();
     resetPolygons();
@@ -141,15 +153,20 @@ document.addEventListener('game-began', () => {
 document.addEventListener('question-answered', () => {
     if(currentQuestionIndex >= questions.length) return; // do nothing
 
+    // update polygon based on answer validity
     updatePolygon(questions[currentQuestionIndex]);
+    // update question element based on answer validity
     updateQuestionEl(currentQuestionIndex);
+    // update score based on answer validity
     updateScore(questionsCorrect, currentQuestionIndex);
 
+    // move on to next question
     currentQuestionIndex++;
     if(currentQuestionIndex >= questions.length) {
-        // game over
+        // game over, out of questions
         stopTimer();
     } else {
+        // add next question
         addQuestion(questions[currentQuestionIndex]);
     }
 })
@@ -157,6 +174,7 @@ document.addEventListener('question-answered', () => {
 
 /* GOOGLE MAPS API SETUP */
 
+// variables to hold references to google maps api objects
 let map;
 let sierraTowerPolygon;
 
@@ -168,6 +186,7 @@ let liveOakPolygon;
 
 let citrusHallPolygon;
 async function initMap() {
+    // disable lables on map
     const styles = [
         {
             featureType: "all",
@@ -184,6 +203,7 @@ async function initMap() {
     // Get the gmp-map element.
     const mapElement = document.getElementById('map');
     map = new Map(mapElement, {
+        // center coordinates for where i want the user to play
         center: { lat: 34.23961322987335, lng: -118.5289617556713 },
 
         styles: styles,
@@ -194,6 +214,7 @@ async function initMap() {
 
         disableDefaultUI: true,
 
+        // disable controls
         cameraControl: false,
         mapTypeControl: false,
         scaleControl: false,
@@ -202,6 +223,8 @@ async function initMap() {
         fullscreenControl: false,
     });
 
+
+    // create polygon google maps objects based on respective coordinates
 
     sierraTowerPolygon = new google.maps.Polygon(getPolygonOptions(sierraTowerCoords, 'unanswered'));
     sierraTowerPolygon.setMap(map);
@@ -218,6 +241,8 @@ async function initMap() {
     citrusHallPolygon = new google.maps.Polygon(getPolygonOptions(citrusHallCoords, 'unanswered'));
     citrusHallPolygon.setMap(map);
 
+
+    // add listeners to double click on entire map and individual polygons
 
     map.addListener('dblclick', e => {
         answerQuestion(enumAnswers.UNKNOWN_LOC, currentQuestionIndex);
@@ -246,24 +271,28 @@ async function initMap() {
 
 }
 
+// expose initMap function for google maps api
 window.initMap = initMap;
 
 
 /* FUNCTIONS */
 
+// update question object with answer status and dispatch event
 function answerQuestion(answer, questionIndex) {
     if(questionIndex >= questions.length) return;
 
     const question = questions[questionIndex];
     const isCorrect = answer === question.answer;
-    if(isCorrect) questionsCorrect++;
+    if(isCorrect) questionsCorrect++; // increment correct answers
     question.status = isCorrect ? 'correct' : 'incorrect';
     
+    // dispatch questionAnswered event
     document.dispatchEvent(questionAnswered);
 
     return isCorrect;
 }
 
+// update color of polygon based on answer to a question
 function updatePolygon(question) {
     switch(question.answer) {
         case enumAnswers.SIERRA_TOWER:
@@ -284,6 +313,7 @@ function updatePolygon(question) {
     }
 }
 
+// reset all polygons to unanswered color (transparent)
 function resetPolygons() {
     sierraTowerPolygon.setOptions(getPolygonOptions(sierraTowerCoords, 'unanswered'));
     matadorHallPolygon.setOptions(getPolygonOptions(matadorHallCoords, 'unanswered'));
@@ -292,6 +322,9 @@ function resetPolygons() {
     citrusHallPolygon.setOptions(getPolygonOptions(citrusHallCoords, 'unanswered'));
 }
 
+// correct answers are green
+// incorrect answers are red
+// unanswered polygons are transparent
 function getPolygonOptions(coords, displayType) {
     const fillColor = displayType === 'correct'
                 ? '#449955'
@@ -305,6 +338,7 @@ function getPolygonOptions(coords, displayType) {
                         ? '#00000000'
                         : '#000000'
 
+    // polygon options for google maps api
     return {
         paths: coords,
         strokeColor,
@@ -316,7 +350,9 @@ function getPolygonOptions(coords, displayType) {
     }
 }
 
+// add a question to the dom
 function addQuestion(question) {
+    // create the question element
     const questionEl = document.createElement('div');
     const questionText = document.createElement('h2');
     questionEl.appendChild(questionText);
@@ -325,41 +361,54 @@ function addQuestion(question) {
 
     questionText.innerText = question.text;
 
+    // append the question element to the question section
     questionSection.appendChild(questionEl);
 }
 
+// update a question element based on the status of a question at an index
 function updateQuestionEl(questionIndex) {
+    // check for valid question index
     if(questionIndex < 0 || questionIndex >= questions.length) return;
-    const questionEls = [...questionSection.children]
-            .filter(c => c.classList.contains('question'));
 
+    // get question element from dom
+    const questionEls = [...questionSection.children] // make children enumerator into array
+            .filter(c => c.classList.contains('question')); // filter by elements with question class
+
+    // get question at question index
     const question = questions[questionIndex];
     const questionEl = questionEls[questionIndex];
-    if(!questionEl) return;
+    if(!questionEl) return; // return if not found
 
+    // remove any answer status classes
     questionEl.classList.remove('unanswered', 'incorrect', 'correct');
+    // add updated answer status
     questionEl.classList.add(question.status);
 }
 
+// reset all questions to unanswered
 function resetQuestionObjs() {
     for(const question of questions) {
         question.status = 'unanswered';
     }
 }
 
+// update score element with specific text format
 function updateScore(score, questionIndex) {
     scoreEl.innerText = `${score}/${questionIndex + 1}`;
 }
 
+// reset score to 0/0
 function resetScore() {
     scoreEl.innerText = '0/0';
 }
 
+// clear timer interval and reset time passed
 function resetTimer() {
     timePassed = 0.0;
     clearInterval(timerIntervalId);
 }
 
+// start the game timer and set interval, incrementing time passed and updating timer element
 function startTimer() {
     timerIntervalId = setInterval(() => {
         timePassed += timerPrecision / 1000;
@@ -367,6 +416,7 @@ function startTimer() {
     }, timerPrecision);
 }
 
+// stop the timer by clearing its interval
 function stopTimer() {
     clearInterval(timerIntervalId);
 }
